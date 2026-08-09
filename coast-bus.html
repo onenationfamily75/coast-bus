@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coast Bus — We Lead, Others Follow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0E2A3D;
+    --navy-deep:#081B24;
+    --sand:#F4EEE1;
+    --sand-dim:#E9E0CC;
+    --saffron:#E7A63C;
+    --rust:#B1472C;
+    --teal:#1E7A73;
+    --white:#FBF8F2;
+    --ink:#131313;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--sand);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;}
+  button{touch-action:manipulation;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+
+  /* ============ NAV ============ */
+  .nav{position:sticky;top:0;z-index:40;background:var(--navy);border-bottom:3px solid var(--saffron);}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--white);text-decoration:none;}
+  .brand-mark{width:34px;height:34px;border-radius:8px;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;color:var(--navy-deep);font-size:16px;transform:rotate(-4deg);}
+  .brand-text{font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;letter-spacing:0.5px;}
+  .brand-text span{color:var(--saffron);}
+  .nav-links{display:flex;align-items:center;gap:28px;}
+  .nav-links a{color:#DCE4E7;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:0.3px;}
+  .nav-links a:hover{color:var(--saffron);}
+  .nav-cta{background:var(--saffron);color:var(--navy-deep);border:none;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;padding:10px 18px;border-radius:8px;cursor:pointer;}
+  .nav-cta:hover{background:#f0b658;}
+  @media (max-width:880px){.nav-links{display:none;}}
+
+  /* ============ HERO ============ */
+  .hero{background:radial-gradient(ellipse at 20% -10%,#123249 0%,var(--navy) 45%,var(--navy-deep) 100%);color:var(--white);padding:56px 0 120px;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:22px 22px;pointer-events:none;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:48px;align-items:center;position:relative;}
+  .eyebrow{font-family:'Space Mono',monospace;color:var(--saffron);font-size:13px;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--saffron);display:inline-block;}
+  .hero h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1.03;margin:0 0 18px;letter-spacing:-0.5px;}
+  .hero h1 em{color:var(--saffron);font-style:normal;}
+  .hero p{font-size:17px;line-height:1.6;color:#CFDCE2;max-width:480px;margin:0 0 8px;}
+  @media (max-width:880px){.hero-grid{grid-template-columns:1fr;}}
+
+  .board{background:var(--navy-deep);border:1px solid #1c3c50;border-radius:12px;padding:20px;box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);}
+  .board-head{display:flex;justify-content:space-between;align-items:center;font-family:'Space Mono',monospace;color:var(--saffron);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #24455b;}
+  .board-head .dot{width:8px;height:8px;border-radius:50%;background:#39d17a;display:inline-block;margin-right:6px;box-shadow:0 0 8px #39d17a;}
+  .flap-row{display:flex;align-items:center;justify-content:space-between;padding:10px 4px;border-bottom:1px solid #16293580;font-family:'Space Mono',monospace;}
+  .flap-row:last-child{border-bottom:none;}
+  .flap-dest{color:var(--white);font-weight:700;font-size:15px;letter-spacing:1px;min-width:150px;}
+  .flap-time,.flap-plat{color:#8CA6B4;font-size:13px;}
+  .flap-status{font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:5px;}
+  .flap-status.ok{background:#173a2c;color:#39d17a;}
+  .flap-status.soon{background:#3a2f17;color:var(--saffron);}
+  .flap-active .flap-dest{color:var(--saffron);animation:flip .5s ease;}
+  @keyframes flip{0%{transform:rotateX(90deg);opacity:0;}100%{transform:rotateX(0deg);opacity:1;}}
+  @media (prefers-reduced-motion:reduce){.flap-active .flap-dest{animation:none;}}
+
+  /* ============ SEARCH PANEL (overlaps hero bottom) ============ */
+  .search-shell{max-width:var(--maxw);margin:-72px auto 0;padding:0 24px;position:relative;z-index:10;}
+  .search-panel{background:var(--white);border-radius:16px;box-shadow:0 24px 50px -18px rgba(8,27,36,0.45);padding:22px 22px 20px;border:1px solid #ECE2CB;}
+  .trip-toggle{display:inline-flex;background:var(--sand-dim);border-radius:9px;padding:4px;margin-bottom:16px;}
+  .trip-toggle button{border:none;background:transparent;padding:8px 16px;font-size:13.5px;font-weight:700;font-family:'Inter',sans-serif;color:#6b6252;border-radius:7px;cursor:pointer;}
+  .trip-toggle button.active{background:var(--navy);color:var(--white);}
+  .search-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;align-items:end;}
+  .search-field{display:flex;flex-direction:column;gap:5px;min-width:0;}
+  .search-field label{font-size:11px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:#8a8168;}
+  .search-field select,.search-field input{border:1.5px solid #E0D8C4;border-radius:9px;padding:11px 10px;font-size:14px;font-family:'Inter',sans-serif;background:#FCFAF4;width:100%;}
+  .search-field select:focus,.search-field input:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal);}
+  .swap-btn{width:40px;height:40px;border-radius:50%;background:var(--sand-dim);border:1.5px solid #E0D8C4;cursor:pointer;font-size:16px;color:var(--navy);align-self:end;margin-bottom:1px;}
+  .swap-btn:hover{background:var(--saffron);color:#fff;border-color:var(--saffron);}
+  .search-btn{background:var(--rust);color:#fff;border:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;}
+  .search-btn:hover{background:#9c3c23;}
+  #returnDateField{display:none;}
+  @media (max-width:920px){
+    .search-grid{grid-template-columns:1fr 1fr;}
+    .swap-btn{display:none;}
+    .search-btn{grid-column:1/-1;}
+  }
+
+  .search-results{margin-top:16px;display:none;}
+  .search-results.show{display:block;}
+  .result-card{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--sand-dim);border-radius:12px;padding:14px 16px;flex-wrap:wrap;margin-bottom:10px;}
+  .result-route{font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:var(--navy);}
+  .result-meta{font-size:12.5px;color:#6b6252;margin-top:2px;font-family:'Space Mono',monospace;}
+  .result-price{font-family:'Archivo',sans-serif;font-weight:900;font-size:19px;color:var(--rust);}
+  .result-select{background:var(--navy);color:#fff;border:none;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:8px;cursor:pointer;}
+  .result-select:hover{background:var(--teal);}
+  .search-error{color:var(--rust);font-size:13px;margin-top:10px;display:none;}
+  .search-error.show{display:block;}
+
+  /* ============ ROUTES SECTION ============ */
+  .section{padding:64px 0;}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:32px;flex-wrap:wrap;}
+  .section-head h2{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(26px,3vw,36px);margin:0;color:var(--navy);letter-spacing:-0.5px;}
+  .section-head p{color:#5b5346;font-size:15px;margin:6px 0 0;max-width:480px;}
+  .fare-note{font-family:'Space Mono',monospace;font-size:12px;color:var(--rust);background:#f6e2d8;border:1px solid #ecc4b1;padding:8px 12px;border-radius:8px;}
+  .route-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;}
+
+  .ticket{position:relative;background:var(--white);border:1px solid #E4D9C2;border-radius:10px;padding:20px 18px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 0 rgba(0,0,0,0.03);transition:transform .18s ease, box-shadow .18s ease;}
+  .ticket:hover{transform:translateY(-3px);box-shadow:0 14px 24px -12px rgba(14,42,61,0.25);}
+  .ticket::before,.ticket::after{content:"";position:absolute;top:50%;transform:translateY(-50%);width:18px;height:18px;background:var(--sand);border-radius:50%;}
+  .ticket::before{left:-10px;}
+  .ticket::after{right:-10px;}
+  .ticket-perf{position:absolute;left:14px;right:14px;top:calc(50% - 1px);border-top:2px dashed #D9CDB2;}
+  .ticket-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .ticket-route{font-family:'Space Mono',monospace;font-size:11px;color:#9c9182;letter-spacing:1px;}
+  .ticket-code{font-family:'Space Mono',monospace;font-size:11px;background:var(--navy);color:var(--saffron);padding:2px 7px;border-radius:5px;letter-spacing:1px;}
+  .ticket-city{font-family:'Archivo',sans-serif;font-weight:800;font-size:21px;color:var(--navy);margin:2px 0 0;line-height:1.1;}
+  .ticket-bottom{display:flex;justify-content:space-between;align-items:flex-end;margin-top:2px;}
+  .ticket-dur{font-size:12px;color:#7a7263;font-weight:600;}
+  .ticket-price-label{font-size:10px;color:#9c9182;letter-spacing:1px;text-transform:uppercase;}
+  .ticket-price{font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;color:var(--rust);}
+  .ticket-book{margin-top:4px;width:100%;background:var(--navy);color:var(--white);border:none;font-weight:700;font-size:13.5px;padding:11px;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.3px;}
+  .ticket-book:hover{background:var(--teal);}
+  .ticket.hub{background:linear-gradient(135deg,var(--navy),var(--navy-deep));border-color:var(--navy-deep);}
+  .ticket.hub .ticket-city,.ticket.hub .ticket-route,.ticket.hub .ticket-dur{color:var(--white);}
+  .ticket.hub .ticket-code{background:var(--saffron);color:var(--navy-deep);}
+  .ticket.hub .ticket-price{color:var(--saffron);}
+  .ticket.hub .ticket-perf{border-top-color:#2a4356;}
+  .ticket.hub::before,.ticket.hub::after{background:var(--navy);}
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--navy-deep);color:#B9C7CE;padding:44px 0 26px;margin-top:20px;}
+  .foot-grid{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap;border-bottom:1px solid #1b3140;padding-bottom:28px;}
+  .foot-col h4{color:var(--white);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;font-family:'Space Mono',monospace;}
+  .foot-col p,.foot-col a{display:block;color:#9db0ba;text-decoration:none;font-size:14px;margin-bottom:8px;}
+  .foot-col a:hover{color:var(--saffron);}
+  .foot-bottom{display:flex;justify-content:space-between;padding-top:20px;font-size:12.5px;color:#6d818b;flex-wrap:wrap;gap:8px;}
+  .wa-float{position:fixed;right:22px;bottom:22px;z-index:50;background:#25D366;color:#fff;border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -6px rgba(0,0,0,0.4);text-decoration:none;}
+  .wa-float svg{width:28px;height:28px;fill:#fff;}
+
+  /* ============ MODAL ============ */
+  .modal-overlay{position:fixed;inset:0;background:rgba(8,20,28,0.65);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:26px 12px;overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--white);width:100%;max-width:640px;border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -10px rgba(0,0,0,0.5);}
+  .modal-head{background:var(--navy);color:var(--white);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;}
+  .modal-head-city{font-family:'Archivo',sans-serif;font-weight:900;font-size:19px;}
+  .modal-head-sub{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--saffron);margin-top:2px;}
+  .modal-close{background:none;border:none;color:var(--white);font-size:22px;cursor:pointer;line-height:1;padding:4px;}
+  .modal-close:hover{color:var(--saffron);}
+
+  /* step indicator */
+  .step-indicator{display:flex;align-items:center;background:#F6F0E1;padding:14px 22px;border-bottom:1px solid #ECE2CB;}
+  .step-item{display:flex;align-items:center;gap:8px;flex:1;}
+  .step-item .circle{width:26px;height:26px;border-radius:50%;background:#DED2B4;color:#8a8168;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,color .2s;}
+  .step-item .lbl{font-size:11.5px;font-weight:700;color:#8a8168;letter-spacing:0.3px;white-space:nowrap;}
+  .step-item .line{flex:1;height:2px;background:#DED2B4;margin:0 6px;}
+  .step-item:last-child .line{display:none;}
+  .step-item.active .circle{background:var(--rust);color:#fff;}
+  .step-item.active .lbl{color:var(--rust);}
+  .step-item.done .circle{background:var(--teal);color:#fff;}
+  .step-item.done .line{background:var(--teal);}
+  @media (max-width:560px){.step-item .lbl{display:none;}.step-indicator{padding:12px 14px;}}
+
+  .modal-body{padding:22px 24px 8px;max-height:62vh;overflow-y:auto;}
+  .modal-foot{padding:16px 24px 22px;border-top:1px solid #EEE6D4;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;}
+  .modal-foot .right-btns{display:flex;gap:10px;margin-left:auto;}
+
+  .step-pane{display:none;}
+  .step-pane.active{display:block;}
+
+  .step-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rust);margin:0 0 12px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:12.5px;font-weight:600;color:#555;}
+  .field input,.field select{border:1.5px solid #E0D8C4;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Inter',sans-serif;background:#FCFAF4;width:100%;}
+  .field input:focus,.field select:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal);}
+  hr.divider{border:none;border-top:1px dashed #E0D8C4;margin:16px 0;}
+  .m-trip-toggle{margin-bottom:14px;}
+  .m-swap-row{display:flex;align-items:end;gap:8px;}
+  .m-swap-row .swap-btn{margin-bottom:1px;}
+
+  /* seats */
+  .leg-tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .leg-tab{flex:1;border:1.5px solid #E0D8C4;background:#fff;border-radius:9px;padding:10px;text-align:center;cursor:pointer;font-weight:700;font-size:13px;color:#8a8168;}
+  .leg-tab.active{border-color:var(--teal);background:#EAF4F2;color:var(--teal);}
+  .leg-tab .sub{display:block;font-size:11px;font-weight:500;margin-top:2px;font-family:'Space Mono',monospace;}
+  .seat-legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .seat-legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:#666;}
+  .legend-seat{width:20px;height:22px;border-radius:6px 6px 4px 4px;display:inline-block;border:2px solid;}
+  .legend-seat.l-avail{background:#EAF3FC;border-color:#3B82C4;}
+  .legend-seat.l-vip{background:#FCEFD2;border-color:#E7A63C;}
+  .legend-seat.l-sel{background:var(--teal);border-color:var(--teal);}
+  .legend-seat.l-taken{background:#AEB4BB;border-color:#9299A1;}
+  .vip-note{font-size:11.5px;color:#8a5b12;background:#FCEFD2;border:1px solid #E7A63C;border-radius:7px;padding:6px 10px;margin-bottom:12px;}
+
+  .bus-shell{background:#F7F2E7;border:1.5px solid #E5DAC0;border-radius:16px;padding:18px 14px;}
+  .bus-topline{display:flex;justify-content:space-between;align-items:center;font-family:'Space Mono',monospace;font-size:10px;color:#8a8168;letter-spacing:1px;margin-bottom:12px;}
+  .wheel-icon{color:#8a8168;}
+  .seat-map{display:none;}
+  .seat-map.active{display:block;}
+
+  .seat-deck{display:flex;justify-content:space-between;gap:28px;}
+  .seat-col{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .seat-pair{display:flex;gap:8px;}
+  .door-marker{
+    border:2px dashed #C0392B;color:#C0392B;font-weight:800;font-size:10px;letter-spacing:2px;
+    writing-mode:vertical-rl;text-align:center;width:36px;height:60px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;margin:2px 0;
+  }
+  .back-seat-row{display:flex;justify-content:center;margin-top:14px;}
+
+  .seat{position:relative;width:42px;background:none;border:none;padding:0;cursor:pointer;user-select:none;font-family:'Space Mono',monospace;transition:transform .08s ease;}
+  .seat .headrest{display:block;width:18px;height:12px;margin:0 auto;border-radius:6px 6px 0 0;border:2px solid var(--sc-border,#3B82C4);border-bottom:none;background:var(--sc-fill,#EAF3FC);}
+  .seat .body{
+    display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;position:relative;
+    width:42px;height:36px;border-radius:8px 8px 5px 5px;
+    border:2px solid var(--sc-border,#3B82C4);background:var(--sc-fill,#EAF3FC);
+    font-size:10.5px;font-weight:700;color:var(--sc-text,#1B4C73);
+  }
+  .seat .body::before{content:"";position:absolute;top:9px;left:16%;right:16%;height:2px;background:var(--sc-border,#3B82C4);opacity:.5;}
+  .vip-tag{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:var(--saffron);color:#fff;font-size:7.5px;font-weight:800;padding:1px 5px;border-radius:6px;letter-spacing:.5px;white-space:nowrap;z-index:2;}
+
+  .seat.avail{--sc-fill:#EAF3FC;--sc-border:#3B82C4;--sc-text:#1B4C73;}
+  .seat.avail:hover .body{filter:brightness(0.97);}
+  .seat.avail:active{transform:scale(0.94);}
+  .seat.avail-vip{--sc-fill:#FCEFD2;--sc-border:#E7A63C;--sc-text:#8a5b12;}
+  .seat.avail-vip:active{transform:scale(0.94);}
+  .seat.taken{--sc-fill:#AEB4BB;--sc-border:#9299A1;--sc-text:#fff;cursor:not-allowed;}
+  .seat.selected{--sc-fill:#1E7A73;--sc-border:#1E7A73;--sc-text:#fff;transform:scale(1.05);}
+  .seat.selected-vip{--sc-fill:#C98A1B;--sc-border:#C98A1B;--sc-text:#fff;transform:scale(1.05);}
+
+  .seat-summary{margin-top:14px;font-size:13px;color:#555;}
+  .seat-summary b{color:var(--navy);}
+
+  .pax-block{border:1.5px solid #EEE6D4;border-radius:10px;padding:14px;margin-bottom:12px;background:#FCFAF4;}
+  .pax-block h5{margin:0 0 10px;font-size:13px;font-family:'Space Mono',monospace;color:var(--teal);letter-spacing:1px;}
+  .pax-3col{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;}
+  @media(max-width:560px){.pax-3col{grid-template-columns:1fr;}}
+
+  /* review */
+  .review-block{border:1.5px solid #EEE6D4;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#FCFAF4;}
+  .review-block h5{margin:0 0 8px;font-size:12px;font-family:'Space Mono',monospace;color:var(--rust);letter-spacing:1px;text-transform:uppercase;}
+  .review-row{display:flex;justify-content:space-between;font-size:13.5px;color:#3d3a33;padding:4px 0;border-bottom:1px dashed #EEE6D4;}
+  .review-row:last-child{border-bottom:none;}
+  .review-row b{color:var(--navy);}
+
+  .total-bar{display:flex;justify-content:space-between;align-items:center;background:var(--sand-dim);border-radius:10px;padding:14px 16px;margin:14px 0 6px;}
+  .total-bar span{font-size:13px;color:#5b5346;}
+  .total-bar b{font-family:'Archivo',sans-serif;font-size:22px;color:var(--rust);}
+
+  .btn-secondary{background:#EFE7D3;color:var(--navy);border:none;font-weight:700;font-size:14px;padding:12px 18px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-secondary:hover{background:#E4D9BC;}
+  .btn-secondary:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-next{background:var(--navy);color:#fff;border:none;font-weight:700;font-size:14px;padding:12px 20px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-next:hover{background:var(--teal);}
+  .btn-confirm{background:#25D366;color:#fff;border:none;font-weight:700;font-size:14px;padding:12px 20px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+  .btn-confirm:hover{background:#1fbd5a;}
+  .error-msg{color:var(--rust);font-size:12.5px;margin-top:6px;display:none;}
+  .error-msg.show{display:block;}
+
+  @media(max-width:520px){
+    .field-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="brand-mark">CB</span>
+      <span class="brand-text">COAST <span>BUS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#search">Find a route</a>
+      <a href="#routes">Top routes</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('search').scrollIntoView({behavior:'smooth'})">Book a seat</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Est. 1970 &nbsp;·&nbsp; Mombasa Terminal</div>
+      <h1>We lead,<br><em>others follow.</em></h1>
+      <p>Kenya's coastal-born coach line, running the country's backbone routes from the Indian Ocean to the western highlands — for over 55 years.</p>
+    </div>
+    <div class="board" aria-label="Live departures board">
+      <div class="board-head"><span><span class="dot"></span>MOMBASA TERMINAL — DEPARTURES</span><span id="clock">--:--</span></div>
+      <div id="flapBoard"></div>
+    </div>
+  </div>
+</header>
+
+<!-- SEARCH -->
+<div class="search-shell" id="search">
+  <div class="search-panel">
+    <div class="trip-toggle" role="group" aria-label="Trip type">
+      <button type="button" id="oneWayBtn" class="active">One way</button>
+      <button type="button" id="roundTripBtn">Round trip</button>
+    </div>
+    <div class="search-grid">
+      <div class="search-field">
+        <label for="sFrom">From</label>
+        <select id="sFrom"></select>
+      </div>
+      <button class="swap-btn" id="swapBtn" type="button" aria-label="Swap from and to">⇄</button>
+      <div class="search-field">
+        <label for="sTo">To</label>
+        <select id="sTo"></select>
+      </div>
+      <div class="search-field">
+        <label for="sDepart">Depart</label>
+        <input type="date" id="sDepart">
+      </div>
+      <div class="search-field" id="returnDateField">
+        <label for="sReturn">Return</label>
+        <input type="date" id="sReturn">
+      </div>
+      <div class="search-field">
+        <label for="sPax">Passengers</label>
+        <select id="sPax"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+      </div>
+      <button class="search-btn" id="searchBtn" type="button">Search buses</button>
+    </div>
+    <p class="search-error" id="searchError">Please choose a different "From" and "To" town, plus valid travel date(s).</p>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ROUTES -->
+<section class="section" id="routes">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Our top routes</h2>
+        <p>Quick-book from Mombasa Terminal, or use the search above for any town-to-town trip.</p>
+      </div>
+      <div class="fare-note">Fares shown are indicative — final fare is confirmed at booking. VIP front seats add 50%.</div>
+    </div>
+    <div class="route-grid" id="routeGrid"></div>
+  </div>
+</section>
+
+<!-- ABOUT strip -->
+<section style="background:var(--sand-dim);padding:40px 0;">
+  <div class="wrap" style="display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between;">
+    <div style="max-width:260px;"><h4 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--rust);margin:0 0 6px;">RELIABLE</h4><p style="margin:0;font-size:14px;color:#5b5346;">55+ years on Kenya's roads, from the coast to the highlands.</p></div>
+    <div style="max-width:260px;"><h4 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--rust);margin:0 0 6px;">4-STEP BOOKING</h4><p style="margin:0;font-size:14px;color:#5b5346;">Trip, seats, passengers, review — then confirm on WhatsApp.</p></div>
+    <div style="max-width:260px;"><h4 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--rust);margin:0 0 6px;">WIDE NETWORK</h4><p style="margin:0;font-size:14px;color:#5b5346;">24 towns served, from Lamu to Malaba, Kisumu to Kitui.</p></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;color:#fff;">COAST <span style="color:var(--saffron)">BUS</span></div>
+        <p style="max-width:220px;margin-top:10px;">Mombasa Terminal, Kenya. Serving the coast, the capital, the highlands and the west.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Book</h4>
+        <a href="#search">Find a route</a>
+        <a href="https://wa.me/254107524689" target="_blank" rel="noopener">WhatsApp booking</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <p>Booking &amp; support</p>
+        <a href="tel:+254107524689">+254 107 524 689</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Coast Bus. All fares are indicative and confirmed at time of booking.</span>
+      <span>Mombasa · Nairobi · Kisumu · Eldoret · Bungoma</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/254107524689" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.887.518 3.71 1.499 5.31L2 22l4.885-1.585a9.9 9.9 0 0 0 5.155 1.41h.004c5.46 0 9.905-4.45 9.905-9.914C21.949 6.45 17.5 2 12.04 2zm0 18.02h-.003a8.13 8.13 0 0 1-4.145-1.135l-.297-.176-3.083 1.002.981-3.147-.194-.315a8.08 8.08 0 0 1-1.256-4.339c0-4.505 3.667-8.171 8.174-8.171 2.183 0 4.234.85 5.777 2.394a8.13 8.13 0 0 1 2.394 5.784c0 4.506-3.667 8.103-8.348 8.103z"/></svg>
+</a>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalCity">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-head-city" id="modalCity">Book your trip</div>
+        <div class="modal-head-sub" id="modalSub">STEP 1 OF 4</div>
+      </div>
+      <button class="modal-close" id="modalCloseBtn" aria-label="Close booking form">✕</button>
+    </div>
+
+    <div class="step-indicator">
+      <div class="step-item" data-step="1"><span class="circle">1</span><span class="lbl">Trip</span><span class="line"></span></div>
+      <div class="step-item" data-step="2"><span class="circle">2</span><span class="lbl">Seats</span><span class="line"></span></div>
+      <div class="step-item" data-step="3"><span class="circle">3</span><span class="lbl">Passengers</span><span class="line"></span></div>
+      <div class="step-item" data-step="4"><span class="circle">4</span><span class="lbl">Review</span><span class="line"></span></div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- STEP 1: TRIP -->
+      <div class="step-pane active" id="pane1">
+        <p class="step-label">Trip details</p>
+        <div class="trip-toggle m-trip-toggle" role="group" aria-label="Trip type">
+          <button type="button" id="mOneWayBtn" class="active">One way</button>
+          <button type="button" id="mRoundTripBtn">Round trip</button>
+        </div>
+        <div class="field-row m-swap-row">
+          <div class="field"><label for="mFrom">From</label><select id="mFrom"></select></div>
+          <button class="swap-btn" id="mSwapBtn" type="button" aria-label="Swap from and to">⇄</button>
+          <div class="field"><label for="mTo">To</label><select id="mTo"></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="mDepartDate">Depart date</label><input type="date" id="mDepartDate"></div>
+          <div class="field"><label for="mDepartTime">Depart time</label>
+            <select id="mDepartTime">
+              <option value="06:00">06:00 AM</option><option value="07:30">07:30 AM</option>
+              <option value="09:00">09:00 AM</option><option value="12:00">12:00 PM</option>
+              <option value="14:00">02:00 PM</option><option value="19:00">07:00 PM</option>
+              <option value="21:00" selected>09:00 PM</option><option value="22:00">10:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row" id="mReturnRow" style="display:none;">
+          <div class="field"><label for="mReturnDate">Return date</label><input type="date" id="mReturnDate"></div>
+          <div class="field"><label for="mReturnTime">Return time</label>
+            <select id="mReturnTime">
+              <option value="06:00">06:00 AM</option><option value="07:30">07:30 AM</option>
+              <option value="09:00">09:00 AM</option><option value="12:00">12:00 PM</option>
+              <option value="14:00">02:00 PM</option><option value="19:00">07:00 PM</option>
+              <option value="21:00" selected>09:00 PM</option><option value="22:00">10:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="mPax">Passengers</label>
+            <select id="mPax"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </div>
+          <div class="field"><label for="mContactPhone">Primary contact number</label>
+            <input type="tel" id="mContactPhone" placeholder="e.g. 0712 345 678"></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: SEATS -->
+      <div class="step-pane" id="pane2">
+        <p class="step-label">Choose your seat(s)</p>
+        <div class="leg-tabs" id="legTabs" style="display:none;">
+          <button type="button" class="leg-tab active" data-leg="outbound">Outbound<span class="sub" id="legTabOutSub"></span></button>
+          <button type="button" class="leg-tab" data-leg="return">Return<span class="sub" id="legTabRetSub"></span></button>
+        </div>
+        <div class="vip-note">★ Front seats (1–8) are VIP — extra legroom, priced 50% above standard fare.</div>
+        <div class="seat-legend">
+          <span><i class="legend-seat l-avail"></i>Standard</span>
+          <span><i class="legend-seat l-vip"></i>VIP</span>
+          <span><i class="legend-seat l-sel"></i>Selected</span>
+          <span><i class="legend-seat l-taken"></i>Taken</span>
+        </div>
+        <div class="bus-shell">
+          <div class="bus-topline">
+            <span id="legHeading">OUTBOUND</span>
+            <svg class="wheel-icon" width="30" height="30" viewBox="0 0 34 34" fill="none" aria-label="Driver">
+              <circle cx="17" cy="17" r="14" stroke="currentColor" stroke-width="2"/>
+              <circle cx="17" cy="17" r="3.5" fill="currentColor"/>
+              <line x1="17" y1="4" x2="17" y2="13" stroke="currentColor" stroke-width="2"/>
+              <line x1="6" y1="24" x2="14" y2="19" stroke="currentColor" stroke-width="2"/>
+              <line x1="28" y1="24" x2="20" y2="19" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="seat-map active" id="seatMapOutbound"></div>
+          <div class="seat-map" id="seatMapReturn"></div>
+        </div>
+        <p class="seat-summary" id="seatSummaryWrap">Selected: <b id="seatSummary">none</b></p>
+      </div>
+
+      <!-- STEP 3: PASSENGERS -->
+      <div class="step-pane" id="pane3">
+        <p class="step-label">Passenger details</p>
+        <div id="paxFields"></div>
+      </div>
+
+      <!-- STEP 4: REVIEW -->
+      <div class="step-pane" id="pane4">
+        <p class="step-label">Review &amp; confirm</p>
+        <div id="reviewContent"></div>
+        <div class="total-bar">
+          <span>Total fare (indicative)</span>
+          <b id="totalFare">KES 0</b>
+        </div>
+      </div>
+
+      <p class="error-msg" id="errorMsg"></p>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-secondary" id="backBtn">Back</button>
+      <div class="right-btns">
+        <button class="btn-secondary" id="cancelBtn">Cancel</button>
+        <button class="btn-next" id="nextBtn">Next</button>
+        <button class="btn-confirm" id="confirmBtn" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+          Confirm on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const WHATSAPP_NUMBER = "254107524689";
+
+  // km-from-Mombasa index, used to derive realistic-feeling fares & durations for ANY town pair
+  const CITIES = [
+    {name:"Lamu", km:-340},
+    {name:"Malindi", km:-120},
+    {name:"Mariakani", km:36},
+    {name:"Changamwe", km:8},
+    {name:"Mombasa", km:0},
+    {name:"Voi", km:160},
+    {name:"Mtito Andei", km:230},
+    {name:"Kibwezi", km:260},
+    {name:"Makindu", km:285},
+    {name:"Emali", km:330},
+    {name:"Machakos Junction", km:400},
+    {name:"Nairobi", km:480},
+    {name:"Kitui", km:560},
+    {name:"Naivasha", km:560},
+    {name:"Nakuru", km:620},
+    {name:"Eldoret", km:700},
+    {name:"Kericho", km:740},
+    {name:"Kisumu", km:810},
+    {name:"Chavakali", km:850},
+    {name:"Kakamega", km:870},
+    {name:"Mumias", km:890},
+    {name:"Webuye", km:910},
+    {name:"Bungoma", km:920},
+    {name:"Malaba", km:950},
+  ];
+  const cityNames = CITIES.map(c => c.name).sort((a,b)=>a.localeCompare(b));
+  const codeOf = c => c.replace(/[^A-Za-z]/g,"").slice(0,3).toUpperCase();
+
+  function computeTrip(fromName, toName){
+    const a = CITIES.find(c=>c.name===fromName), b = CITIES.find(c=>c.name===toName);
+    if(!a || !b || a.name===b.name) return null;
+    const dist = Math.abs(a.km-b.km);
+    const price = Math.max(150, Math.round((dist*2.6+80)/50)*50);
+    const hours = dist/55;
+    let h = Math.floor(hours), m = Math.round((hours-h)*60);
+    if (m===60){h++;m=0;}
+    const dur = (h>0?h+"h":"") + (m>0?(h>0?" ":"")+m+"m":"") || "20m";
+    return {price, dur, dist};
+  }
+
+  // ---------- populate selects ----------
+  function fillCitySelect(sel, def){
+    sel.innerHTML = cityNames.map(n => `<option ${n===def?"selected":""}>${n}</option>`).join("");
+  }
+  const sFrom=document.getElementById("sFrom"), sTo=document.getElementById("sTo");
+  const mFrom=document.getElementById("mFrom"), mTo=document.getElementById("mTo");
+  [sFrom,mFrom].forEach(s=>fillCitySelect(s,"Mombasa"));
+  [sTo,mTo].forEach(s=>fillCitySelect(s,"Nairobi"));
+
+  // ---------- render top-routes grid (all from Mombasa) ----------
+  const grid = document.getElementById("routeGrid");
+  const gridCities = ["Bungoma","Changamwe","Chavakali","Eldoret","Emali","Kakamega","Kericho","Kibwezi","Kisumu","Kitui","Lamu","Machakos Junction","Makindu","Malaba","Malindi","Mariakani","Mombasa","Mtito Andei","Mumias","Nairobi","Naivasha","Nakuru","Voi","Webuye"];
+  gridCities.forEach(city => {
+    const card = document.createElement("div");
+    if (city === "Mombasa"){
+      card.className = "ticket hub";
+      card.innerHTML = `
+        <div class="ticket-top"><span class="ticket-route">MAIN TERMINAL</span><span class="ticket-code">HQ</span></div>
+        <div class="ticket-city">Mombasa</div><div class="ticket-perf"></div>
+        <div class="ticket-bottom"><span class="ticket-dur">All departures start here</span></div>
+        <button class="ticket-book" type="button">Find a route ↓</button>`;
+      card.querySelector(".ticket-book").addEventListener("click", ()=>document.getElementById("search").scrollIntoView({behavior:"smooth"}));
+    } else {
+      const t = computeTrip("Mombasa", city);
+      card.className = "ticket";
+      card.innerHTML = `
+        <div class="ticket-top"><span class="ticket-route">MOMBASA → ${city.toUpperCase()}</span><span class="ticket-code">${codeOf(city)}</span></div>
+        <div class="ticket-city">${city}</div><div class="ticket-perf"></div>
+        <div class="ticket-bottom">
+          <div><div class="ticket-price-label">From</div><div class="ticket-price">KES ${t.price.toLocaleString()}</div></div>
+          <div class="ticket-dur">${t.dur}</div>
+        </div>
+        <button class="ticket-book" type="button">Book this route</button>`;
+      card.querySelector(".ticket-book").addEventListener("click", ()=>openBooking({from:"Mombasa",to:city,roundTrip:false}));
+    }
+    grid.appendChild(card);
+  });
+
+  // ---------- split-flap board ----------
+  const board = document.getElementById("flapBoard");
+  const boardCities = gridCities.filter(c=>c!=="Mombasa").slice(0,6);
+  const times = ["06:00","07:30","09:00","14:00","19:00","21:00"];
+  boardCities.forEach((c,i) => {
+    const row = document.createElement("div");
+    row.className = "flap-row";
+    row.innerHTML = `<span class="flap-dest">${c.toUpperCase()}</span><span class="flap-time">${times[i%times.length]}</span><span class="flap-status ${i%3===0?'soon':'ok'}">${i%3===0?'BOARDING':'ON TIME'}</span>`;
+    board.appendChild(row);
+  });
+  const allNames = gridCities.filter(c=>c!=="Mombasa").map(c=>c.toUpperCase());
+  setInterval(() => {
+    const rows = board.querySelectorAll(".flap-row");
+    const row = rows[Math.floor(Math.random()*rows.length)];
+    row.querySelector(".flap-dest").textContent = allNames[Math.floor(Math.random()*allNames.length)];
+    row.classList.add("flap-active");
+    setTimeout(()=>row.classList.remove("flap-active"), 550);
+  }, 2600);
+  function tickClock(){document.getElementById("clock").textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+  tickClock(); setInterval(tickClock,1000);
+
+  // ---------- SEARCH PANEL ----------
+  let searchRoundTrip = false;
+  const oneWayBtn=document.getElementById("oneWayBtn"), roundTripBtn=document.getElementById("roundTripBtn");
+  const returnDateField=document.getElementById("returnDateField");
+  oneWayBtn.addEventListener("click", ()=>{searchRoundTrip=false;oneWayBtn.classList.add("active");roundTripBtn.classList.remove("active");returnDateField.style.display="none";});
+  roundTripBtn.addEventListener("click", ()=>{searchRoundTrip=true;roundTripBtn.classList.add("active");oneWayBtn.classList.remove("active");returnDateField.style.display="flex";});
+  document.getElementById("swapBtn").addEventListener("click", ()=>{const t=sFrom.value;sFrom.value=sTo.value;sTo.value=t;});
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  document.getElementById("sDepart").min = todayStr;
+  document.getElementById("sReturn").min = todayStr;
+
+  document.getElementById("searchBtn").addEventListener("click", () => {
+    const from=sFrom.value, to=sTo.value, dep=document.getElementById("sDepart").value, ret=document.getElementById("sReturn").value;
+    const errEl = document.getElementById("searchError");
+    const resultsEl = document.getElementById("searchResults");
+    let bad = from===to || !dep || (searchRoundTrip && (!ret || ret < dep));
+    if (bad){ errEl.classList.add("show"); resultsEl.classList.remove("show"); return; }
+    errEl.classList.remove("show");
+
+    const out = computeTrip(from,to);
+    resultsEl.innerHTML = "";
+    const outCard = document.createElement("div");
+    outCard.className = "result-card";
+    outCard.innerHTML = `<div><div class="result-route">${from} → ${to}</div><div class="result-meta">${dep} · Outbound · ~${out.dur}</div></div>
+      <div class="result-price">KES ${out.price.toLocaleString()}</div>
+      <button class="result-select" type="button">Select seats</button>`;
+    outCard.querySelector(".result-select").addEventListener("click", ()=>openBooking({from,to,roundTrip:searchRoundTrip,departDate:dep,returnDate:ret,pax:document.getElementById("sPax").value}));
+    resultsEl.appendChild(outCard);
+
+    if (searchRoundTrip){
+      const back = computeTrip(to,from);
+      const retCard = document.createElement("div");
+      retCard.className = "result-card";
+      retCard.innerHTML = `<div><div class="result-route">${to} → ${from}</div><div class="result-meta">${ret} · Return · ~${back.dur}</div></div>
+        <div class="result-price">KES ${back.price.toLocaleString()}</div>
+        <button class="result-select" type="button">Select seats</button>`;
+      retCard.querySelector(".result-select").addEventListener("click", ()=>openBooking({from,to,roundTrip:true,departDate:dep,returnDate:ret,pax:document.getElementById("sPax").value}));
+      resultsEl.appendChild(retCard);
+    }
+    resultsEl.classList.add("show");
+  });
+
+  // ================= BOOKING MODAL / 4-STEP WIZARD =================
+  const overlay = document.getElementById("modalOverlay");
+  const modalCity = document.getElementById("modalCity");
+  const modalSub = document.getElementById("modalSub");
+  const errorMsg = document.getElementById("errorMsg");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const confirmBtn = document.getElementById("confirmBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  const mOneWayBtn=document.getElementById("mOneWayBtn"), mRoundTripBtn=document.getElementById("mRoundTripBtn");
+  const mReturnRow=document.getElementById("mReturnRow");
+  const mDepartDate=document.getElementById("mDepartDate"), mReturnDate=document.getElementById("mReturnDate");
+  const mPax=document.getElementById("mPax"), mContactPhone=document.getElementById("mContactPhone");
+  mDepartDate.min = todayStr; mReturnDate.min = todayStr;
+
+  let state = {roundTrip:false, step:1, seats:{outbound:[], return:[]}, activeLeg:"outbound"};
+  let lastFocused = null;
+
+  document.getElementById("mSwapBtn").addEventListener("click", ()=>{const t=mFrom.value;mFrom.value=mTo.value;mTo.value=t;});
+  mOneWayBtn.addEventListener("click", ()=>setModalTripType(false));
+  mRoundTripBtn.addEventListener("click", ()=>setModalTripType(true));
+  function setModalTripType(rt){
+    state.roundTrip = rt;
+    mOneWayBtn.classList.toggle("active", !rt);
+    mRoundTripBtn.classList.toggle("active", rt);
+    mReturnRow.style.display = rt ? "grid" : "none";
+    document.getElementById("legTabs").style.display = rt ? "flex" : "none";
+  }
+
+  function openBooking(opts){
+    lastFocused = document.activeElement;
+    mFrom.value = opts.from || "Mombasa";
+    mTo.value = opts.to || "Nairobi";
+    setModalTripType(!!opts.roundTrip);
+    mDepartDate.value = opts.departDate || "";
+    mReturnDate.value = opts.returnDate || "";
+    mPax.value = opts.pax || "1";
+    mContactPhone.value = "";
+    state.seats = {outbound:[], return:[]};
+    state.activeLeg = "outbound";
+    goToStep(1);
+    overlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+    setTimeout(()=>mFrom.focus(), 50);
+  }
+  function closeModal(){
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+    if (lastFocused) lastFocused.focus();
+  }
+  document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e)=>{ if(e.target===overlay) closeModal(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && overlay.classList.contains("open")) closeModal(); });
+
+  // ---- step navigation ----
+  function goToStep(n){
+    state.step = n;
+    document.querySelectorAll(".step-pane").forEach(p=>p.classList.remove("active"));
+    document.getElementById("pane"+n).classList.add("active");
+    document.querySelectorAll(".step-item").forEach(si=>{
+      const s = parseInt(si.dataset.step,10);
+      si.classList.toggle("active", s===n);
+      si.classList.toggle("done", s<n);
+    });
+    modalCity.textContent = (mFrom.value && mTo.value) ? `${mFrom.value} → ${mTo.value}` : "Book your trip";
+    modalSub.textContent = `STEP ${n} OF 4`;
+    backBtn.style.display = n===1 ? "none" : "inline-block";
+    nextBtn.style.display = n===4 ? "none" : "inline-block";
+    confirmBtn.style.display = n===4 ? "inline-flex" : "none";
+    errorMsg.classList.remove("show");
+    if (n===2) renderSeatStep();
+    if (n===3) renderPaxStep();
+    if (n===4) renderReviewStep();
+  }
+  function showError(msg){ errorMsg.textContent = msg; errorMsg.classList.add("show"); }
+
+  nextBtn.addEventListener("click", () => {
+    if (state.step===1){
+      if (mFrom.value===mTo.value) return showError("Please choose two different towns.");
+      if (!mDepartDate.value) return showError("Please choose a depart date.");
+      if (state.roundTrip && (!mReturnDate.value || mReturnDate.value < mDepartDate.value)) return showError("Please choose a valid return date (after departure).");
+      if (!mContactPhone.value.trim()) return showError("Please enter a primary contact number.");
+      goToStep(2); return;
+    }
+    if (state.step===2){
+      const pax = parseInt(mPax.value,10);
+      if (state.seats.outbound.length !== pax) return showError(`Please select ${pax} seat(s) for the outbound trip.`);
+      if (state.roundTrip && state.seats.return.length !== pax) return showError(`Please select ${pax} seat(s) for the return trip.`);
+      goToStep(3); return;
+    }
+    if (state.step===3){
+      const inputs = document.querySelectorAll("#paxFields .pax-block");
+      for (const b of inputs){
+        const name=b.querySelector(".pax-name").value.trim();
+        const phone=b.querySelector(".pax-phone").value.trim();
+        const id=b.querySelector(".pax-id").value.trim();
+        if (!name || !phone || !id) return showError("Please fill in name, phone number and ID number for every passenger.");
+      }
+      goToStep(4); return;
+    }
+  });
+  backBtn.addEventListener("click", () => { if (state.step>1) goToStep(state.step-1); });
+
+  // ---- Step 2: seats ----
+  const seatMapOutbound = document.getElementById("seatMapOutbound");
+  const seatMapReturn = document.getElementById("seatMapReturn");
+  const legTabs = document.getElementById("legTabs");
+  const legHeading = document.getElementById("legHeading");
+
+  legTabs.addEventListener("click", (e) => {
+    const tab = e.target.closest(".leg-tab");
+    if (!tab) return;
+    state.activeLeg = tab.dataset.leg;
+    legTabs.querySelectorAll(".leg-tab").forEach(t=>t.classList.toggle("active", t===tab));
+    seatMapOutbound.classList.toggle("active", state.activeLeg==="outbound");
+    seatMapReturn.classList.toggle("active", state.activeLeg==="return");
+    legHeading.textContent = state.activeLeg==="outbound" ? `${mFrom.value.toUpperCase()} → ${mTo.value.toUpperCase()}` : `${mTo.value.toUpperCase()} → ${mFrom.value.toUpperCase()}`;
+    updateSeatSummary();
+  });
+
+  const VIP_SEAT_LIMIT = 8; // seat numbers 1-8 are VIP (front rows)
+  const isVipSeat = num => num <= VIP_SEAT_LIMIT;
+  const seatFare = (base, vip) => vip ? Math.round((base*1.5)/10)*10 : base;
+
+  function makeSeatBtn(num, legKey){
+    const vip = isVipSeat(num);
+    const taken = Math.random() < 0.28;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.dataset.seat = num;
+    btn.className = "seat " + (taken ? "taken" : (vip ? "avail-vip" : "avail"));
+    btn.innerHTML = (vip && !taken ? '<span class="vip-tag">VIP</span>' : '')
+      + '<span class="headrest"></span>'
+      + `<span class="body">${taken ? "SOLD" : num}</span>`;
+    if (taken){
+      btn.disabled = true;
+      btn.setAttribute("aria-label", `Seat ${num}${vip?" (VIP)":""}, taken`);
+    } else {
+      btn.setAttribute("aria-label", `Seat ${num}${vip?" (VIP)":""}, available`);
+      btn.addEventListener("click", () => toggleSeat(btn, num, legKey, vip));
+    }
+    return btn;
+  }
+
+  function buildSeatMap(container, legKey){
+    container.innerHTML = "";
+    const deck = document.createElement("div");
+    deck.className = "seat-deck";
+    const colLeft = document.createElement("div"); colLeft.className = "seat-col";
+    const colRight = document.createElement("div"); colRight.className = "seat-col";
+    const rows = 10;
+    for (let r=0; r<rows; r++){
+      const rowLeft = document.createElement("div"); rowLeft.className = "seat-pair";
+      const rowRight = document.createElement("div"); rowRight.className = "seat-pair";
+      rowLeft.appendChild(makeSeatBtn(r*4+1, legKey));
+      rowLeft.appendChild(makeSeatBtn(r*4+2, legKey));
+      rowRight.appendChild(makeSeatBtn(r*4+3, legKey));
+      rowRight.appendChild(makeSeatBtn(r*4+4, legKey));
+      colLeft.appendChild(rowLeft);
+      colRight.appendChild(rowRight);
+      if (r === 1){
+        const door = document.createElement("div");
+        door.className = "door-marker";
+        door.textContent = "DOOR";
+        colLeft.appendChild(door);
+      }
+    }
+    deck.appendChild(colLeft);
+    deck.appendChild(colRight);
+    container.appendChild(deck);
+    const backRow = document.createElement("div");
+    backRow.className = "back-seat-row";
+    backRow.appendChild(makeSeatBtn(41, legKey));
+    container.appendChild(backRow);
+  }
+
+  function toggleSeat(el, num, legKey, vip){
+    const max = parseInt(mPax.value,10);
+    const list = state.seats[legKey];
+    const idx = list.findIndex(s => s.num === num);
+    if (idx > -1){
+      list.splice(idx,1);
+      el.className = "seat " + (vip ? "avail-vip" : "avail");
+    } else {
+      if (list.length >= max){ showError(`You've selected the max of ${max} seat(s). Deselect one first, or increase Passengers in Step 1.`); return; }
+      list.push({num, vip});
+      el.className = "seat " + (vip ? "selected-vip" : "selected");
+    }
+    errorMsg.classList.remove("show");
+    updateSeatSummary();
+  }
+
+  function updateSeatSummary(){
+    const list = state.seats[state.activeLeg].slice().sort((a,b)=>a.num-b.num);
+    document.getElementById("seatSummary").textContent = list.length
+      ? list.map(s => s.num + (s.vip ? " (VIP)" : "")).join(", ") + ` — ${state.activeLeg}`
+      : "none";
+  }
+
+  function renderSeatStep(){
+    buildSeatMap(seatMapOutbound, "outbound");
+    state.seats.outbound = [];
+    if (state.roundTrip){
+      buildSeatMap(seatMapReturn, "return");
+      state.seats.return = [];
+      document.getElementById("legTabOutSub").textContent = `${mFrom.value} → ${mTo.value}`;
+      document.getElementById("legTabRetSub").textContent = `${mTo.value} → ${mFrom.value}`;
+      state.activeLeg = "outbound";
+      legTabs.querySelectorAll(".leg-tab").forEach(t=>t.classList.toggle("active", t.dataset.leg==="outbound"));
+      seatMapOutbound.classList.add("active"); seatMapReturn.classList.remove("active");
+    }
+    legHeading.textContent = `${mFrom.value.toUpperCase()} → ${mTo.value.toUpperCase()}`;
+    updateSeatSummary();
+  }
+
+  // ---- fare totalling, using per-seat VIP pricing ----
+  function computeTotal(){
+    const outBase = computeTrip(mFrom.value, mTo.value).price;
+    const outTotal = state.seats.outbound.reduce((sum,s) => sum + seatFare(outBase, s.vip), 0);
+    let retTotal = 0;
+    if (state.roundTrip){
+      const retBase = computeTrip(mTo.value, mFrom.value).price;
+      retTotal = state.seats.return.reduce((sum,s) => sum + seatFare(retBase, s.vip), 0);
+    }
+    return outTotal + retTotal;
+  }
+
+  // ---- Step 3: passengers (each mapped to their assigned seat) ----
+  const paxFields = document.getElementById("paxFields");
+  function renderPaxStep(){
+    const pax = parseInt(mPax.value,10);
+    const outSeats = state.seats.outbound.slice().sort((a,b)=>a.num-b.num);
+    const retSeats = state.roundTrip ? state.seats.return.slice().sort((a,b)=>a.num-b.num) : [];
+    const existing = Array.from(paxFields.querySelectorAll(".pax-block")).map(b=>({
+      name:b.querySelector(".pax-name").value, phone:b.querySelector(".pax-phone").value, id:b.querySelector(".pax-id").value
+    }));
+    paxFields.innerHTML = "";
+    for (let i=0;i<pax;i++){
+      const prev = existing[i] || {name:"",phone:"",id:""};
+      const out = outSeats[i];
+      const ret = retSeats[i];
+      let seatLine = out ? `Outbound seat ${out.num}${out.vip?" · VIP":""}` : "";
+      if (state.roundTrip && ret) seatLine += ` &nbsp;·&nbsp; Return seat ${ret.num}${ret.vip?" · VIP":""}`;
+      const block = document.createElement("div");
+      block.className = "pax-block";
+      block.innerHTML = `
+        <h5>PASSENGER ${i+1}${i===0?" (Lead)":""} — ${seatLine}</h5>
+        <div class="pax-3col">
+          <div class="field"><label>Full name</label><input type="text" class="pax-name" placeholder="e.g. Amina Hassan" value="${prev.name}"></div>
+          <div class="field"><label>Phone number</label><input type="tel" class="pax-phone" placeholder="07XX XXX XXX" value="${prev.phone}"></div>
+          <div class="field"><label>ID / passport no.</label><input type="text" class="pax-id" placeholder="e.g. 34521678" value="${prev.id}"></div>
+        </div>`;
+      paxFields.appendChild(block);
+    }
+  }
+
+  // ---- Step 4: review ----
+  function renderReviewStep(){
+    const pax = parseInt(mPax.value,10);
+    const outSeats = state.seats.outbound.slice().sort((a,b)=>a.num-b.num);
+    const retSeats = state.roundTrip ? state.seats.return.slice().sort((a,b)=>a.num-b.num) : [];
+    const total = computeTotal();
+
+    const passengers = Array.from(paxFields.querySelectorAll(".pax-block")).map((b,i)=>({
+      name:b.querySelector(".pax-name").value.trim(), phone:b.querySelector(".pax-phone").value.trim(),
+      id:b.querySelector(".pax-id").value.trim(), outSeat:outSeats[i], retSeat:retSeats[i]
+    }));
+
+    let html = `<div class="review-block"><h5>Trip</h5>
+      <div class="review-row"><span>Outbound</span><b>${mFrom.value} → ${mTo.value}</b></div>
+      <div class="review-row"><span>Depart</span><b>${mDepartDate.value} · ${document.getElementById("mDepartTime").selectedOptions[0].text}</b></div>`;
+    if (state.roundTrip){
+      html += `<div class="review-row"><span>Return</span><b>${mTo.value} → ${mFrom.value}</b></div>
+      <div class="review-row"><span>Return date</span><b>${mReturnDate.value} · ${document.getElementById("mReturnTime").selectedOptions[0].text}</b></div>`;
+    }
+    html += `<div class="review-row"><span>Contact number</span><b>${mContactPhone.value.trim()}</b></div></div>`;
+
+    html += `<div class="review-block"><h5>Passengers &amp; seats (${pax})</h5>`;
+    passengers.forEach((p,i)=>{
+      let seatBit = p.outSeat ? `Seat ${p.outSeat.num}${p.outSeat.vip?" (VIP)":""}` : "";
+      if (state.roundTrip && p.retSeat) seatBit += ` / Return ${p.retSeat.num}${p.retSeat.vip?" (VIP)":""}`;
+      html += `<div class="review-row"><span>${i+1}. ${p.name} — ${seatBit}</span><b>${p.phone} · ID ${p.id}</b></div>`;
+    });
+    html += `</div>`;
+
+    document.getElementById("reviewContent").innerHTML = html;
+    document.getElementById("totalFare").textContent = "KES " + total.toLocaleString();
+  }
+
+  // ---- Final confirm -> WhatsApp, with full per-passenger detail ----
+  confirmBtn.addEventListener("click", () => {
+    const outSeats = state.seats.outbound.slice().sort((a,b)=>a.num-b.num);
+    const retSeats = state.roundTrip ? state.seats.return.slice().sort((a,b)=>a.num-b.num) : [];
+    const total = computeTotal();
+
+    const passengerLines = Array.from(paxFields.querySelectorAll(".pax-block")).map((b,i)=>{
+      const name = b.querySelector(".pax-name").value.trim();
+      const phone = b.querySelector(".pax-phone").value.trim();
+      const id = b.querySelector(".pax-id").value.trim();
+      const out = outSeats[i], ret = retSeats[i];
+      let seatBit = out ? `Outbound seat ${out.num}${out.vip?" (VIP)":""}` : "";
+      if (state.roundTrip && ret) seatBit += `, Return seat ${ret.num}${ret.vip?" (VIP)":""}`;
+      return `${i+1}. ${name} — ${phone} — ID ${id} — ${seatBit}`;
+    });
+
+    const lines = [
+      `*COAST BUS — BOOKING REQUEST*`,
+      `Trip type: ${state.roundTrip ? "Round trip" : "One way"}`,
+      `Outbound: ${mFrom.value} → ${mTo.value}`,
+      `Depart: ${mDepartDate.value} at ${document.getElementById("mDepartTime").selectedOptions[0].text}`,
+    ];
+    if (state.roundTrip){
+      lines.push(
+        `Return: ${mTo.value} → ${mFrom.value}`,
+        `Return date: ${mReturnDate.value} at ${document.getElementById("mReturnTime").selectedOptions[0].text}`
+      );
+    }
+    lines.push(
+      `Primary contact: ${mContactPhone.value.trim()}`,
+      ``,
+      `PASSENGER DETAILS:`,
+      ...passengerLines,
+      ``,
+      `Indicative total (incl. VIP surcharge where applicable): KES ${total.toLocaleString()}`,
+      `Please confirm seat availability and final fare.`
+    );
+    const text = encodeURIComponent(lines.join("\n"));
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
+    closeModal();
+  });
+</script>
+</body>
+</html>
